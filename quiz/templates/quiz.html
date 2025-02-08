@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <style>
+        .canvas-container {
+            position: relative;
+            display: inline-block;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Math Quiz</h1>
+    <div class="canvas-container">
+        <canvas id="pdfCanvas"></canvas>
+        <canvas id="drawCanvas"></canvas>
+    </div>
+    <button id="saveButton">Save</button>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const url = "{{ question.question_pdf.url }}";
+            let pdfCanvas = document.getElementById('pdfCanvas');
+            let pdfCtx = pdfCanvas.getContext('2d');
+            let drawCanvas = document.getElementById('drawCanvas');
+            let drawCtx = drawCanvas.getContext('2d');
+            let isDrawing = false;
+            let lastX = 0, lastY = 0;
+
+            pdfjsLib.getDocument(url).promise.then(pdf => {
+                return pdf.getPage(1);
+            }).then(page => {
+                let viewport = page.getViewport({scale: 1.5});
+                pdfCanvas.width = viewport.width;
+                pdfCanvas.height = viewport.height;
+                drawCanvas.width = viewport.width;
+                drawCanvas.height = viewport.height;
+                drawCanvas.style.width = pdfCanvas.width + "px";
+                drawCanvas.style.height = pdfCanvas.height + "px";
+                return page.render({canvasContext: pdfCtx, viewport: viewport}).promise;
+            });
+
+            function getEventCoordinates(event) {
+                let rect = drawCanvas.getBoundingClientRect();
+                let e = event.touches ? event.touches[0] : event;
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
+            }
+
+            function draw(event) {
+                event.preventDefault();
+                if (!isDrawing) return;
+                let coords = getEventCoordinates(event);
+                drawCtx.lineWidth = 2;
+                drawCtx.lineCap = "round";
+                drawCtx.strokeStyle = "black";
+                drawCtx.beginPath();
+                drawCtx.moveTo(lastX, lastY);
+                drawCtx.lineTo(coords.x, coords.y);
+                drawCtx.stroke();
+                lastX = coords.x;
+                lastY = coords.y;
+            }
+
+            function startDrawing(event) {
+                let coords = getEventCoordinates(event);
+                isDrawing = true;
+                lastX = coords.x;
+                lastY = coords.y;
+            }
+
+            function stopDrawing() {
+                isDrawing = false;
+            }
+
+            drawCanvas.addEventListener('mousedown', startDrawing);
+            drawCanvas.addEventListener('mouseup', stopDrawing);
+            drawCanvas.addEventListener('mousemove', draw);
+            drawCanvas.addEventListener('touchstart', startDrawing);
+            drawCanvas.addEventListener('touchend', stopDrawing);
+            drawCanvas.addEventListener('touchmove', draw);
+
+            document.getElementById('saveButton').addEventListener('click', function () {
+                const mergedCanvas = document.createElement('canvas');
+                mergedCanvas.width = pdfCanvas.width;
+                mergedCanvas.height = pdfCanvas.height;
+                const mergedCtx = mergedCanvas.getContext('2d');
+
+                // Merge PDF and drawing layers
+                mergedCtx.drawImage(pdfCanvas, 0, 0);
+                mergedCtx.drawImage(drawCanvas, 0, 0);
+
+                // Convert merged canvas to image
+                const imageData = mergedCanvas.toDataURL('image/png');
+
+                fetch('{% url "save_drawing" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ image: imageData })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.file) {
+                        alert("Drawing saved successfully!");
+
+                        // Load the saved image and display it on the drawing canvas
+                        const savedImage = new Image();
+                        savedImage.onload = function () {
+                            drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                            drawCtx.drawImage(savedImage, 0, 0, drawCanvas.width, drawCanvas.height);
+                        };
+                        savedImage.src = `/media/${data.file}`; // Adjust this path based on your MEDIA_URL setting
+                    }
+                })
+                .catch(error => console.error('Error saving drawing:', error));
+            });
+
+        });
+    </script>
+</body>
+</html>
