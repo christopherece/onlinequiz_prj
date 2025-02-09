@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['192.168.11.4','localhost','127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'users.apps.UsersConfig',
     'quiz.apps.QuizConfig',
     'django.contrib.admin',
     'django.contrib.auth',
