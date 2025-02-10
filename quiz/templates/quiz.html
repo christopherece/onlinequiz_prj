@@ -20,11 +20,13 @@
 </head>
 <body>
     <h1>Math Quiz</h1>
+    <button id="eraseToggle">Switch to Erase</button>
+    <button id="saveButton">Save</button>
     <div class="canvas-container">
         <canvas id="pdfCanvas"></canvas>
         <canvas id="drawCanvas"></canvas>
     </div>
-    <button id="saveButton">Save</button>
+  
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const url = "{{ question.question_pdf.url }}";
@@ -33,7 +35,9 @@
             let drawCanvas = document.getElementById('drawCanvas');
             let drawCtx = drawCanvas.getContext('2d');
             let isDrawing = false;
+            let isErasing = false;
             let lastX = 0, lastY = 0;
+            let eraseToggle = document.getElementById("eraseToggle");
 
             pdfjsLib.getDocument(url).promise.then(pdf => {
                 return pdf.getPage(1);
@@ -61,9 +65,10 @@
                 event.preventDefault();
                 if (!isDrawing) return;
                 let coords = getEventCoordinates(event);
-                drawCtx.lineWidth = 2;
+                drawCtx.lineWidth = isErasing ? 15 : 3; // Bigger eraser size
                 drawCtx.lineCap = "round";
-                drawCtx.strokeStyle = "black";
+                drawCtx.strokeStyle = isErasing ? "white" : "black";
+                drawCtx.globalCompositeOperation = isErasing ? "destination-out" : "source-over";
                 drawCtx.beginPath();
                 drawCtx.moveTo(lastX, lastY);
                 drawCtx.lineTo(coords.x, coords.y);
@@ -83,12 +88,18 @@
                 isDrawing = false;
             }
 
+            function toggleErase() {
+                isErasing = !isErasing;
+                eraseToggle.textContent = isErasing ? "Switch to Draw" : "Switch to Erase";
+            }
+
             drawCanvas.addEventListener('mousedown', startDrawing);
             drawCanvas.addEventListener('mouseup', stopDrawing);
             drawCanvas.addEventListener('mousemove', draw);
             drawCanvas.addEventListener('touchstart', startDrawing);
             drawCanvas.addEventListener('touchend', stopDrawing);
             drawCanvas.addEventListener('touchmove', draw);
+            eraseToggle.addEventListener("click", toggleErase);
 
             document.getElementById('saveButton').addEventListener('click', function () {
                 const mergedCanvas = document.createElement('canvas');
@@ -128,7 +139,7 @@
                 .catch(error => console.error('Error saving drawing:', error));
             });
 
-            });
+        });
     </script>
 </body>
 </html>
