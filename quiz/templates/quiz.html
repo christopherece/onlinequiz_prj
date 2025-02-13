@@ -64,7 +64,7 @@ button {
 
 .canvas-container {
     position: relative;
-    width: 800px;
+    width: 750px;
     height: 1000px;
     border: 2px solid #ccc;
     border-radius: 5px;
@@ -115,19 +115,31 @@ canvas {
                 let viewport = page.getViewport({scale: 1.5});
                 pdfCanvas.width = viewport.width;
                 pdfCanvas.height = viewport.height;
+
                 drawCanvas.width = viewport.width;
                 drawCanvas.height = viewport.height;
-                drawCanvas.style.width = pdfCanvas.width + "px";
-                drawCanvas.style.height = pdfCanvas.height + "px";
+
+                // Ensure drawCanvas matches pdfCanvas in size and positioning
+                Object.assign(drawCanvas.style, {
+                    width: pdfCanvas.style.width,
+                    height: pdfCanvas.style.height,
+                    position: pdfCanvas.style.position,
+                    top: pdfCanvas.style.top,
+                    left: pdfCanvas.style.left
+                });
+
                 return page.render({canvasContext: pdfCtx, viewport: viewport}).promise;
             });
 
             function getEventCoordinates(event) {
                 let rect = drawCanvas.getBoundingClientRect();
+                let scaleX = drawCanvas.width / rect.width; // Fix pointer mismatch
+                let scaleY = drawCanvas.height / rect.height;
+
                 let e = event.touches ? event.touches[0] : event;
                 return {
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
                 };
             }
 
@@ -160,7 +172,7 @@ canvas {
 
             function toggleErase() {
                 isErasing = !isErasing;
-                eraseToggle.textContent = isErasing ? "Switch to Draw" : "Switch to Erase";
+                eraseToggle.textContent = isErasing ? "Switch to Draw" : "Switch to Erase 🧽";
             }
 
             drawCanvas.addEventListener('mousedown', startDrawing);
