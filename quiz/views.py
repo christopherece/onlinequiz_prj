@@ -7,6 +7,9 @@ from .models import MathQuestion
 import json
 from datetime import datetime
 import uuid
+from django.http import JsonResponse
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 def quiz_view(request):
     # Fetch the first question from the database
@@ -23,11 +26,16 @@ def save_drawing(request):
 
             if not image_data:
                 return JsonResponse({'error': 'No image data received'}, status=400)
+            
+            # Get User and Date
+            user = request.user.username
+            date_str = datetime.now().strftime('%Y-%m-%d')
+
 
             # Decode the base64 image data
             format, imgstr = image_data.split(';base64,')
             ext = format.split('/')[-1]  # Extract the extension (png/jpg)
-            filename = f'drawing_{uuid.uuid4()}.{ext}'  # Unique filename using UUID
+            filename = f'{user}_drawing_{date_str}.{ext}'  # Unique filename with date
 
             # Save the image to the media directory
             filepath = os.path.join(settings.MEDIA_ROOT, filename)
