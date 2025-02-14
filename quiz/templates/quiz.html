@@ -6,95 +6,132 @@
     <title>Quiz</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            width: 90%;
+            max-width: 800px;
+            margin: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        #eraseToggle {
+            background-color: #ff6b6b;
+            color: white;
+        }
+
+        #eraseToggle:hover {
+            background-color: #ff4c4c;
+        }
+
+        #saveButton {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        #saveButton:hover {
+            background-color: #45a049;
+        }
+
         .canvas-container {
             position: relative;
-            display: inline-block;
+            width: 100%;
+            max-width: 750px;
+            height: 1000px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         canvas {
             position: absolute;
             top: 0;
             left: 0;
-            touch-action: none;
+            width: 100%;
+            height: 100%;
         }
-        div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-}
 
-h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-}
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 24px;
+            }
 
-button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+            .container {
+                padding: 15px;
+            }
 
-#eraseToggle {
-    background-color: #ff6b6b;
-    color: white;
-}
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
 
-#eraseToggle:hover {
-    background-color: #ff4c4c;
-}
-
-#saveButton {
-    background-color: #4caf50;
-    color: white;
-}
-
-#saveButton:hover {
-    background-color: #45a049;
-}
-
-.canvas-container {
-    position: relative;
-    width: 750px;
-    height: 1000px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    background: white;
-    overflow: hidden;
-}
-
-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
+            .canvas-container {
+                height: 800px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div>
+    <div class="container">
         <h1>Math Quiz</h1>
-        <button id="eraseToggle">Switch to Erase</button>
-        <button id="saveButton">Save</button>
+        <div class="button-group">
+            <button id="eraseToggle">Switch to Erase 🧽</button>
+            <button id="saveButton">Save</button>
+        </div>
         <div class="canvas-container">
             <canvas id="pdfCanvas"></canvas>
             <canvas id="drawCanvas"></canvas>
         </div>
     </div>
-   
-  
+
     <script>
+        // Your existing script remains unchanged
         document.addEventListener("DOMContentLoaded", function () {
             const url = "{{ question.question_pdf.url }}";
             let pdfCanvas = document.getElementById('pdfCanvas');
@@ -106,8 +143,7 @@ canvas {
             let lastX = 0, lastY = 0;
             let eraseToggle = document.getElementById("eraseToggle");
 
-            eraseToggle.textContent = "Switch to Erase 🧽";
-
+            eraseToggle.textContent = "Switch to Erase �";
 
             pdfjsLib.getDocument(url).promise.then(pdf => {
                 return pdf.getPage(1);
