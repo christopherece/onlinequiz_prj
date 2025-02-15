@@ -115,10 +115,26 @@
                 height: 800px;
             }
         }
+
+        .welcome-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Aligns content to the left */
+            text-align: left; /* Ensures text aligns properly */
+            width: 100%; /* Makes sure it spans full width */
+            margin-bottom: 15px; /* Adds spacing */
+}
     </style>
 </head>
 <body>
+    
     <div class="container">
+        <div class="welcome-section">
+            <h2>Welcome {{request.user.username}}!</h2>
+            <form action="{% url 'logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
         <h1>Math Quiz</h1>
         <div class="button-group">
             <button id="eraseToggle">Switch to Erase 🧽</button>

@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='login')
 def quiz_view(request):
     # Fetch the first question from the database
     question = MathQuestion.objects.first()

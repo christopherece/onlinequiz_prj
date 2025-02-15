@@ -16,10 +16,9 @@ def profiles(request):
     return render(request, 'users/profiles.html')
 
 def loginUser(request):
-    page = 'login'
 
     if request.user.is_authenticated:
-        return redirect('profiles')
+        return redirect('quiz')
 
     if request.method == 'POST':
         username = request.POST['username'].lower()
@@ -34,12 +33,12 @@ def loginUser(request):
 
         if user is not None:
             login(request, user)
-            return redirect(request.GET['next'] if 'next' in request.GET else 'account')
+            return redirect(request.GET['next'] if 'next' in request.GET else 'quiz')
 
         else:
             messages.error(request, 'Username OR password is incorrect')
 
-    return render(request, 'users/login_register.html')
+    return render(request, 'users/login.html')
 
 
 def logoutUser(request):
@@ -62,14 +61,14 @@ def registerUser(request):
             messages.success(request, 'User account was created!')
 
             login(request, user)
-            return redirect('index')
+            return redirect('quiz')
 
         else:
             messages.success(
                 request, 'An error has occurred during registration')
 
     context = {'page': page, 'form': form}
-    return render(request, 'users/login_register.html', context)
+    return render(request, 'users/register.html', context)
 
 @login_required(login_url='login')
 def userAccount(request):
