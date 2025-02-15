@@ -12,7 +12,8 @@
               <i class="fas fa-sign-in-alt"></i> Login</h4>
           </div>
           <div class="card-body">
-            <form action="index.html">
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
               <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" name="username" class="form-control" required>
@@ -24,6 +25,7 @@
               </div>
 
               <input type="submit" value="Login" class="btn btn-secondary btn-block">
+              <p class="text-center">Don't have an account? <a href="{% url 'register' %}">Register</a></p>
             </form>
           </div>
         </div>
