@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-rl@l%enghs792d8j!@^w33^!jhkq9&2y@2806oa4xt_)vtd7cm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.11.4','localhost','127.0.0.1','10.210.89.251']
+ALLOWED_HOSTS = ['192.168.11.4','localhost','127.0.0.1','10.210.89.251','solvepad.topitsolutions.co.nz']
+CSRF_TRUSTED_ORIGINS = [
+    'https://solvepad.topitsolutions.co.nz', 'http://solvepad.topitsolutions.co.nz'
+
+]
 
 
 # Application definition
