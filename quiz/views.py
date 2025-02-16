@@ -11,6 +11,12 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.core.files.base import ContentFile
+from django.core.mail import EmailMessage
+
+
+
 
 
 @login_required(login_url='login')
@@ -33,6 +39,7 @@ def save_drawing(request):
             # Get User and Date
             user = request.user.username
             date_str = datetime.now().strftime('%Y-%m-%d')
+            parent_email = request.user.email
 
 
             # Decode the base64 image data
@@ -45,7 +52,20 @@ def save_drawing(request):
             with open(filepath, 'wb') as f:
                 f.write(base64.b64decode(imgstr))
 
-            return JsonResponse({'message': 'Drawing saved successfully!', 'file': filename})
+             # Convert to Django file for email attachment
+            drawing_file = ContentFile(base64.b64decode(imgstr), name=filename)
+
+            # Send email with attachment
+            email = EmailMessage(
+                subject='Exam has been submitted',
+                body=f'{user} has submitted the exam.',
+                from_email='balaydalakay@gmail.com',
+                to=[parent_email, 'christopheranchetaece@gmail.com'],
+            )
+            email.attach(filename, drawing_file.read(), f'image/{ext}')
+            email.send()
+
+            return JsonResponse({'message': 'Exam saved successfully!', 'file': filename})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
