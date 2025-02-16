@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.urls import conf
 from django.db.models import Q
 from .models import Profile, Message
+from django.contrib import messages
 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileForm

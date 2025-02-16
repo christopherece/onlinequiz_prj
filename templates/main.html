@@ -11,7 +11,21 @@
   <!-- Bootstrap -->
   <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
   <!-- Custom -->
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'uikit/styles/uikit.css' %}">
+
+  <link rel="stylesheet" href="{% static 'uikit/app.css' %}">
+
+  <style>
+    .alert-container {
+    padding: 20px 0 0 0;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+  </style>
+
+
 
   <title>SolvePad | Online Quiz Platform</title>
 </head>
@@ -28,17 +42,16 @@
     </ul>
     {% endif %} -->
 
-    {% if messages %}
-
-        {% for message in messages %}
-        <div class="alert  alert--{{message.tags}}">
-            <p class="alert__message">{{message}}</p>
-            <button class="alert__close">x</button>
-        </div>
-
-        {% endfor %}
-
-    {% endif %}
+    <div class="alert-container">
+      {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert--{{message.tags}}">
+              <p class="alert__message">{{message}}</p>
+              <button class="alert__close">x</button>
+          </div>
+          {% endfor %}
+      {% endif %}
+    </div>
 
 
     {% block content %}

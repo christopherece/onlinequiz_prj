@@ -15,23 +15,41 @@
           <li class="nav-item mr-3">
             <a class="nav-link" href="#">About</a>
           </li>
+          {% if request.user.is_authenticated %}
+
           <li class="nav-item mr-3">
-            <a class="nav-link" href="#">Profile</a>
+            <a class="nav-link" href="{% url 'account' %}">Profile</a>
           </li>
         </ul>
+        {% if request.user.is_authenticated %}
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mr-3">
+            <form action="{% url 'logout' %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">
+                <i class="fas fa-sign-in-alt"></i>Logout </button>
+          </form>
+          </li>
+          {% endif %}
+        </ul>
+        {% else %}
 
         <ul class="navbar-nav ml-auto">
           <li class="nav-item mr-3">
             <a class="nav-link" href="{% url 'register' %}">
               <i class="fas fa-user-plus"></i> Register</a>
           </li>
+
           <li class="nav-item mr-3">
             <a class="nav-link" href="{% url 'login' %}">
               <i class="fas fa-sign-in-alt"></i>
 
               Login</a>
           </li>
+          {% endif %}
         </ul>
       </div>
     </div>
   </nav>
+
+
