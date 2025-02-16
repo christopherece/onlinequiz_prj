@@ -66,7 +66,7 @@ def registerUser(request):
 
         else:
             messages.success(
-                request, 'An error has occurred during registration')
+                request, 'Username is already taken')
 
     context = {'page': page, 'form': form}
     return render(request, 'users/register.html', context)
@@ -89,7 +89,7 @@ def userAccount(request):
 
             # Ensure the associated User object has a username
             if not profile.user.username:
-                profile.user.username = profile.email  # Use email as username
+                profile.user.username = profile.username  # Use email as username
                 profile.user.save()
 
             # Save the profile

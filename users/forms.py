@@ -23,23 +23,21 @@ class CustomUserCreationForm(UserCreationForm):
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['name', 'email', 'age', 'gender', 'address', 'phone', 'image','username']  # Exclude 'username'
+        fields = ['name', 'email', 'username', 'age', 'gender', 'address', 'phone', 'image']
 
-    def save(self, commit=True):
-        profile = super().save(commit=False)
-        if not profile.user.username:  # Set username if it's not already set
-            profile.user.username = profile.email  # Use email as username
-            profile.user.save()
-        if commit:
-            profile.save()
-        return profile
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):    
         super(ProfileForm, self).__init__(*args, **kwargs)
 
+        # Add 'form-control' class to all input fields
         for name, field in self.fields.items():
-            field.widget.attrs.update({'class': 'input'})
+            field.widget.attrs.update({'class': 'form-control'})
 
+        # Add 'form-group' class to the form's label and input wrapper
+        self.label_suffix = ""  # Remove the default colon (:) after labels
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'})
+            field.widget.attrs.update({'placeholder': field.label})  
 
 
 

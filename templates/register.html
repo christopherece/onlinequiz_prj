@@ -14,33 +14,33 @@
                 <i class="fas fa-user-plus"></i> Register</h4>
             </div>
             <div class="card-body">
-              <form method="POST" action="{% url 'register' %}" class="form auth__form">
-                {% csrf_token %}
+               <form method="POST" action="{% url 'register' %}" class="form auth__form">
+                    {% csrf_token %}
+    
+                    {% for field in form %}
+                    <div class="card-body">
 
-                {% for field in form %}
-                <div class="card-body">
-
-                <div class="form-group">
-                    <label for="formInput#text">{{field.label}}</label>
-                    {{field}}
-
-                    <!-- {% if field.help_text %}
-                    <small>{{field.help_text}}</small>
-                    {% endif %} -->
-
-                    {% for error in field.errors %}
-                    <p style="color: red;">{{error}}</p>
-                    {% endfor %}
+                    <div class="form-group">
+                        <label for="formInput#text">{{field.label}}</label>
+                        {{field}}
+    
+                        <!-- {% if field.help_text %}
+                        <small>{{field.help_text}}</small>
+                        {% endif %} -->
+    
+                        {% for error in field.errors %}
+                        <p style="color: red;">{{error}}</p>
+                        {% endfor %}
+                        </div>
+    
                     </div>
-
-                </div>
-
-                {% endfor %}
-
-                <div class="auth__actions">
-                    <input class="btn btn--sub btn--lg" type="submit" value="Sign  In" />
-                </div>
-            </form>
+    
+                    {% endfor %}
+    
+                    <div class="auth__actions">
+                        <input class="btn btn--sub btn--lg" type="submit" value="Sign  In" />
+                    </div>
+                </form>
             </div>
           </div>
         </div>

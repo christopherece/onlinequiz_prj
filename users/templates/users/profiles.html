@@ -3,26 +3,92 @@
 {% load static %}
 {% block content %}
 <section id="login" class="bg-light py-5">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 mx-auto">
-        <div class="card">
-          <div class="card-header bg-primary text-white">
-            <h4>
-              <i class="fas fa-sign-in-alt"></i> Profile</h4>
-          </div>
-          <div class="card-body">
-    <h2>Profile Form</h2>
-    <form method="post" enctype="multipart/form-data">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h4>
+                <i class="fas fa-sign-in-alt"></i> Profile</h4>
+            </div>
+            <div class="card-body">
+      <h2>Profile Form</h2>
+      <form method="post" enctype="multipart/form-data" action="{% url 'edit-account' %}">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Profile</button>
-    </form>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+          <p>
+      <label for="id_name">Name</label>
+      <input type="text" name="name" value="Chris" maxlength="100" class="form-control" placeholder="Name" id="id_name">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_email">Email</label>
+      <input type="email" name="email" value="{{profile.email}}" maxlength="254" class="form-control" placeholder="Email" id="id_email">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_username">Username</label>
+      <input type="text" name="username" value="{{profile}}" maxlength="200" class="form-control" placeholder="Username" id="id_username">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_age">Age</label>
+      <input type="number" name="age" class="form-control" placeholder="Age" id="id_age">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_gender">Gender</label>
+      <input type="text" name="gender" maxlength="10" class="form-control" placeholder="Gender" id="id_gender">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_address">Address</label>
+      <input type="text" name="address" maxlength="100" class="form-control" placeholder="Address" id="id_address">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_phone">Phone</label>
+      <input type="text" name="phone" maxlength="100" class="form-control" placeholder="Phone" id="id_phone">
+      
+      
+    </p>
+  
+    
+    <p>
+      <label for="id_image">Image</label>
+      Currently: <a href="/media/profiles/default.png">profiles/default.png</a><br>
+  Change:
+  <input type="file" name="image" accept="image/*" class="form-control" placeholder="Image" id="id_image">
+      
+      
+        
+      
+    </p>
+          <button type="submit" class="btn btn-secondary">Save Profile</button>
+      </form>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </section>
+  
 
 {% endblock %}
