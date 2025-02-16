@@ -23,9 +23,16 @@ class CustomUserCreationForm(UserCreationForm):
 class ProfileForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['name', 'email', 'username',
-                  'age', 'gender', 'address', 'phone',
-                  'image']
+        fields = ['name', 'email', 'age', 'gender', 'address', 'phone', 'image','username']  # Exclude 'username'
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if not profile.user.username:  # Set username if it's not already set
+            profile.user.username = profile.email  # Use email as username
+            profile.user.save()
+        if commit:
+            profile.save()
+        return profile
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)

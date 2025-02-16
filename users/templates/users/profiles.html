@@ -1,1 +1,28 @@
-<h1>User Profiles</h1>
+
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<section id="login" class="bg-light py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 mx-auto">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4>
+              <i class="fas fa-sign-in-alt"></i> Profile</h4>
+          </div>
+          <div class="card-body">
+    <h2>Profile Form</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Profile</button>
+    </form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+{% endblock %}
