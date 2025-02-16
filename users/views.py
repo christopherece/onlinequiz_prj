@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.urls import conf
 from django.db.models import Q
+from .models import Profile, Message
 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileForm
@@ -72,14 +73,35 @@ def registerUser(request):
 
 @login_required(login_url='login')
 def userAccount(request):
-    profile = request.user.profile
+    # Ensure the user is authenticated
+    if not request.user.is_authenticated:
+        return redirect('login')  # Redirect to login if the user is not authenticated
 
-    skills = profile.skill_set.all()
-    projects = profile.project_set.all()
+    # Get the profile for the current user
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
-    context = {'profile': profile, 'skills': skills, 'projects': projects}
-    return render(request, 'users/account.html', context)
+    if request.method == 'POST':
+        # Bind the form to the submitted data and files
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            # Save the profile data
+            profile = form.save(commit=False)
 
+            # Ensure the associated User object has a username
+            if not profile.user.username:
+                profile.user.username = profile.email  # Use email as username
+                profile.user.save()
+
+            # Save the profile
+            profile.save()
+            return redirect('account')  # Redirect to a success page
+    else:
+        # Pre-fill the form with the existing profile data
+        form = ProfileForm(instance=profile)
+
+    # Render the form template with the form and profile data
+    context = {'form': form, 'profile': profile}
+    return render(request, 'users/profiles.html', context)
 
 @login_required(login_url='login')
 def editAccount(request):
