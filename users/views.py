@@ -9,6 +9,8 @@ from django.urls import conf
 from django.db.models import Q
 from .models import Profile, Message
 from django.contrib import messages
+from .forms import CustomUserCreationForm
+
 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileForm
@@ -54,7 +56,7 @@ def registerUser(request):
     form = UserCreationForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
@@ -66,6 +68,7 @@ def registerUser(request):
             return redirect('quiz')
 
         else:
+            form = CustomUserCreationForm()
             messages.success(
                 request, 'Username is already taken')
 

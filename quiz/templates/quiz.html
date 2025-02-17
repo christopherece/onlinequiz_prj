@@ -250,12 +250,7 @@
 </head>
 <body>
 
-    <div class="modal" id="loading-modal">
-        <div class="modal-content">
-            <img src="{% static 'images/loading.gif' %}" alt="Loading...">
-            <p>Saving your exam and Sending email to your Dad...</p>
-        </div>
-    </div>
+   
     <div class="navbar">
         <div>
             <a href="{% url 'quiz' %}">Home</a>
@@ -269,6 +264,11 @@
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
+        
+    </div>
+    <div class="container">
+
+       
         {% if messages %}
 
         {% for message in messages %}
@@ -280,11 +280,8 @@
         {% endfor %}
 
         {% endif %}
-    </div>
-    <div class="container">
-
-       
         <div class="welcome-section">
+
         <h1>Math Quiz</h1>
         <div class="button-group">
             <button id="eraseToggle">Switch to Erase 🧽</button>
@@ -299,6 +296,13 @@
     <footer class="footer">
         <p>© 2025 Quiz App. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
     </footer>
+
+    <div class="modal" id="loading-modal">
+        <div class="modal-content">
+            <img src="{% static 'images/loading.gif' %}" alt="Loading...">
+            <p>Saving your exam and Sending email to your Dad...</p>
+        </div>
+    </div>
 
     <script>
         // Your existing script remains unchanged

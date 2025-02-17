@@ -69,6 +69,24 @@
 <script src="{% static 'uikit/app.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var alert = document.getElementsByClassName('alert');
+    var closeButton = document.querySelector('.alert__close');
+    
+    // Hide the alert after 3 seconds
+    setTimeout(function() {
+      style.display = 'none';
+    }, 3000);
+
+    // Add event listener for the close button
+    closeButton.addEventListener('click', function() {
+      style.display = 'none';
+    });
+  });
+</script>
+
+
 
 
 </html>

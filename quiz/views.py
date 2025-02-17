@@ -59,8 +59,8 @@ def save_drawing(request):
             email = EmailMessage(
                 subject='Exam has been submitted',
                 body=f'{user} has submitted the exam.',
-                from_email='balaydalakay@gmail.com',
-                to=[parent_email, 'christopheranchetaece@gmail.com'],
+                from_email='topitsolutionsnz@gmail.com',
+                to={parent_email},
             )
             email.attach(filename, drawing_file.read(), f'image/{ext}')
             email.send()
