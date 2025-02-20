@@ -21,35 +21,30 @@
         min-height: 100vh;
         }
 
-         /* Modal styling */
-         .modal  {
-            display: none; /* Ensure modal is hidden by default */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-        }
+        .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it sits on top of other elements */
+}
 
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
 
-        .modal img {
-            width: 50px;
-            height: 50px;
-        }
+.modal img {
+    max-width: 50px;
+    margin-bottom: 10px;
+}
         .navbar {
         background-color: #10284e;
         padding: 15px 20px;
@@ -297,15 +292,16 @@
         <p>© 2025 Quiz App. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
     </footer>
 
-    <div class="modal" id="loading-modal">
+    <!-- Loading Modal -->
+    <div class="modal" id="loading-modal" style="display:none;">
         <div class="modal-content">
             <img src="{% static 'images/loading.gif' %}" alt="Loading...">
-            <p>Saving your exam and Sending email to your Dad...</p>
+            <p>Saving your exam and sending email to your Dad...</p>
         </div>
     </div>
 
+
     <script>
-        // Your existing script remains unchanged
         document.addEventListener("DOMContentLoaded", function () {
             const url = "{{ question.question_pdf.url }}";
             let pdfCanvas = document.getElementById('pdfCanvas');
@@ -316,19 +312,22 @@
             let isErasing = false;
             let lastX = 0, lastY = 0;
             let eraseToggle = document.getElementById("eraseToggle");
-
-            eraseToggle.textContent = "Switch to Erase �";
-
+    
+            // Get the loading modal spinner
+            const loadingModal = document.getElementById('loading-modal');
+            
+            eraseToggle.textContent = "Switch to Erase 🧽";
+    
             pdfjsLib.getDocument(url).promise.then(pdf => {
                 return pdf.getPage(1);
             }).then(page => {
                 let viewport = page.getViewport({scale: 1.5});
                 pdfCanvas.width = viewport.width;
                 pdfCanvas.height = viewport.height;
-
+    
                 drawCanvas.width = viewport.width;
                 drawCanvas.height = viewport.height;
-
+    
                 // Ensure drawCanvas matches pdfCanvas in size and positioning
                 Object.assign(drawCanvas.style, {
                     width: pdfCanvas.style.width,
@@ -337,22 +336,22 @@
                     top: pdfCanvas.style.top,
                     left: pdfCanvas.style.left
                 });
-
+    
                 return page.render({canvasContext: pdfCtx, viewport: viewport}).promise;
             });
-
+    
             function getEventCoordinates(event) {
                 let rect = drawCanvas.getBoundingClientRect();
                 let scaleX = drawCanvas.width / rect.width; // Fix pointer mismatch
                 let scaleY = drawCanvas.height / rect.height;
-
+    
                 let e = event.touches ? event.touches[0] : event;
                 return {
                     x: (e.clientX - rect.left) * scaleX,
                     y: (e.clientY - rect.top) * scaleY
                 };
             }
-
+    
             function draw(event) {
                 event.preventDefault();
                 if (!isDrawing) return;
@@ -368,23 +367,23 @@
                 lastX = coords.x;
                 lastY = coords.y;
             }
-
+    
             function startDrawing(event) {
                 let coords = getEventCoordinates(event);
                 isDrawing = true;
                 lastX = coords.x;
                 lastY = coords.y;
             }
-
+    
             function stopDrawing() {
                 isDrawing = false;
             }
-
+    
             function toggleErase() {
                 isErasing = !isErasing;
                 eraseToggle.textContent = isErasing ? "Switch to Draw" : "Switch to Erase 🧽";
             }
-
+    
             drawCanvas.addEventListener('mousedown', startDrawing);
             drawCanvas.addEventListener('mouseup', stopDrawing);
             drawCanvas.addEventListener('mousemove', draw);
@@ -392,25 +391,23 @@
             drawCanvas.addEventListener('touchend', stopDrawing);
             drawCanvas.addEventListener('touchmove', draw);
             eraseToggle.addEventListener("click", toggleErase);
-
+    
             document.getElementById('saveButton').addEventListener('click', function () {
-                const modal = document.getElementById('loading-modal');
-                modal.style.display = 'flex'; // Show the modal
-
-                
+                // Show the loading modal spinner
+                loadingModal.style.display = 'flex'; // Show the modal
+    
                 const mergedCanvas = document.createElement('canvas');
                 mergedCanvas.width = pdfCanvas.width;
                 mergedCanvas.height = pdfCanvas.height;
                 const mergedCtx = mergedCanvas.getContext('2d');
-
-
+    
                 // Merge PDF and drawing layers
                 mergedCtx.drawImage(pdfCanvas, 0, 0);
                 mergedCtx.drawImage(drawCanvas, 0, 0);
-
+    
                 // Convert merged canvas to image
                 const imageData = mergedCanvas.toDataURL('image/png');
-
+    
                 fetch('{% url "save_drawing" %}', {
                     method: 'POST',
                     headers: {
@@ -422,7 +419,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.file) {
-                       
                         // Load the saved image and display it on the drawing canvas
                         const savedImage = new Image();
                         savedImage.onload = function () {
@@ -436,10 +432,30 @@
                     console.error('Error saving drawing:', error);
                 })
                 .finally(() => {
-                    spinner.style.display = "none"; // Hide spinner
+                    // Hide the loading modal spinner after operation
+                    loadingModal.style.display = 'none'; // Hide the modal
                 });
             });
+        });
+    </script>
+    
+    <script>
+        // Function to remove the alert
+        function closeAlert(alertId) {
+            const alertElement = document.getElementById(alertId);
+            if (alertElement) {
+                alertElement.style.display = 'none';
+            }
+        }
 
+        // Automatically remove alert after 5 seconds (5000ms)
+        document.addEventListener("DOMContentLoaded", function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 5000); // 5000ms = 5 seconds
+            });
         });
     </script>
 
