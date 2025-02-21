@@ -53,7 +53,7 @@ def logoutUser(request):
 
 def registerUser(request):
     page = 'register'
-    form = UserCreationForm()
+    form = CustomUserCreationForm()
 
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -63,14 +63,13 @@ def registerUser(request):
             user.save()
 
             messages.success(request, 'User account was created!')
-
             login(request, user)
             return redirect('quiz')
-
         else:
-            form = CustomUserCreationForm()
-            messages.success(
-                request, 'Username is already taken')
+            # Get specific error messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
 
     context = {'page': page, 'form': form}
     return render(request, 'users/register.html', context)
